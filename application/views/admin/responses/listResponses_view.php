@@ -49,6 +49,14 @@ echo viewHelper::getViewTestTag('surveyResponsesBrowse');
 
         <div class="ls-flex-row col-12">
             <div class="col-12 ls-flex-column">
+
+                <div class="total-sum-assessment-answer-value">
+                    <span class="h2">
+                        Загальна сума балів:
+                        <b><?php print_r($model->sum_assessment_answer_value()) ?></b>
+                    </span>
+                </div>
+
                 <div id='top-scroller' class="content-right scrolling-wrapper"    >
                 <div id='fake-content'>&nbsp;</div>
                 </div>
@@ -241,9 +249,6 @@ echo viewHelper::getViewTestTag('surveyResponsesBrowse');
 
                     ?>
                 </div>
-                <pre>
-                    <?php print_r($model->ssearch()); ?>
-                </pre>
 
                 <!-- To update rows per page via ajax setSession-->
                 <?php

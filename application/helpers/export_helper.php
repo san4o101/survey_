@@ -1854,11 +1854,16 @@ function quexml_export($surveyi, $quexmllan, $iResponseID = false)
                 $section->appendChild($question);
             }
         }
-
-
         $questionnaire->appendChild($section);
     }
 
+    $fieldNames = SurveyDynamic::needFieldNames($iSurveyID);
+    $text = 'Загальна сума балів за всі питання: ' . SurveyDynamic::foreachSurvey(SurveyDynamic::model($iSurveyID)->find($iSurveyID),
+            $fieldNames);
+    $data['question'] = templatereplace($text, $RowQReplacements);
+    $question = quexml_create_question($data);
+    $section->appendChild($question);
+    $questionnaire->appendChild($section);
 
     $dom->appendChild($questionnaire);
 

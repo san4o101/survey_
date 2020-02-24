@@ -640,26 +640,39 @@ class SurveyDynamic extends LSActiveRecord
         return Yii::app()->user->getState('defaultEllipsizeQuestionValue', Yii::app()->params['defaultEllipsizeQuestionValue']);
     }
 
-    public function ssearch()
+    public function sum_assessment_answer_value()
+    {
+        $fieldNames = self::needFieldNames($this->getSurveyId());
+        $allData = $this->findAll();
+        $assessment_sum = 0;
+        foreach ($allData as $items) {
+            $assessment_sum += self::foreachSurvey($items, $fieldNames);
+        }
+
+        return $assessment_sum;
+    }
+
+    public static function needFieldNames($surveyId)
     {
         $connection = Yii::app()->db;
-        $sql = "SELECT Column_Name as column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME LIKE '". $this->getSurveyId() . "%' AND COLUMN_NAME NOT LIKE '%time'";
+        $sql = "SELECT Column_Name as column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME LIKE '". $surveyId . "%' AND COLUMN_NAME NOT LIKE '%time'";
         $comm = $connection->createCommand($sql);
         $r = $comm->queryAll();
         $fieldNames = [];
         foreach ($r as $item) {
             array_push($fieldNames, $item['column_name']);
         }
-        $allData = $this->findAll();
-        $assessment_sum = 0;
-        foreach ($allData as $items) {
-            foreach ($items as $key => $value) {
-                if(in_array($key, $fieldNames)) {
-                    $criteria = new CDbCriteria();
-                    $criteria->addColumnCondition(array('code' => $value));
-                    $assessment_sum += Answer::model()->query($criteria)->assessment_value;
-                    print_r(Answer::model()->query($criteria)->assessment_value . ' ');
-                }
+
+        return $fieldNames;
+    }
+
+    public static function foreachSurvey($items, $fieldNames, $assessment_sum = 0)
+    {
+        foreach ($items as $key => $value) {
+            if(in_array($key, $fieldNames)) {
+                $criteria = new CDbCriteria();
+                $criteria->addColumnCondition(array('code' => $value));
+                $assessment_sum += Answer::model()->query($criteria)->assessment_value;
             }
         }
 
